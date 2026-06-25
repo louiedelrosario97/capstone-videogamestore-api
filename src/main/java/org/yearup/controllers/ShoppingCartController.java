@@ -71,13 +71,13 @@ public class ShoppingCartController
     // https://localhost:8080/cart  - return the (now empty) cart so the front end can refresh it (200 OK)
 
     @DeleteMapping
-    public void deleteCart(Principal principal)
+    public void clearCart(Principal principal)
     {
         String username = principal.getName();
         User user = userService.getByUserName(username);
         int userId = user.getId();
 
-        shoppingCartService.deleteCart(userId);
+        shoppingCartService.clearCart(userId);
     }
 
 }
