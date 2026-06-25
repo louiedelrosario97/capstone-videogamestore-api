@@ -17,9 +17,15 @@ import java.security.Principal;
 @PreAuthorize("isAuthenticated()")                          // only logged-in users should have access to these actions
 public class ShoppingCartController
 {
-                                                            // a shopping cart controller depends on the service layer
-    private ShoppingCartService shoppingCartService;
-    private UserService userService;
+
+    private ShoppingCartService shoppingCartService;        // notes: The controller depends on the service layer.
+    private UserService userService;                        // 'User' objects are required for cart functionality.
+
+    public ShoppingCartController(ShoppingCartService shoppingCartService, UserService userService)
+    {
+        this.shoppingCartService = shoppingCartService;
+        this.userService = userService;
+    }
 
 // ----------------------------------- [ @GetMapping getCart() ] ------------------------------------------------------
 
@@ -36,11 +42,12 @@ public class ShoppingCartController
         return shoppingCartService.getByUserId(userId);
     }
 // ----------------------------------- [ @PostMapping addProductToCart() ] ---------------------------------------------
-    // add a POST method to add a product to the cart - the url should be
-    // https://localhost:8080/cart/products/15  (15 is the productId to be added)
-    // return the updated cart with status 201 Created
+    // instructions: add a POST method to add a product to the cart
+    // the url should be https://localhost:8080/cart/products/15
+    // return the updated cart, with a 201 status code created
 
     @PostMapping("products/{productId}")
+    @ResponseStatus(HttpStatus.CREATED)
     public ShoppingCart addProductToCart(Principal principal, @PathVariable int productId)
     {
         String username = principal.getName();
@@ -50,8 +57,8 @@ public class ShoppingCartController
         return shoppingCartService.addProductToCart(userId, productId);
     }
 
-// ----------------------------------- [ @PutMapping getCart() ] ------------------------------------------------------
-    // add a PUT method to update an existing product in the cart - the url should be
+// ----------------------------------- [ @PutMapping updateProduct() ] ------------------------------------------------------
+    // instructions: add a PUT method to update an existing product in the cart - the url should be
     // https://localhost:8080/cart/products/15  (15 is the productId to be updated)
 
     @PutMapping("products/{productId}")
@@ -62,22 +69,23 @@ public class ShoppingCartController
         int userId = user.getId();
 
         // Pull the new quantity out of the request body and pass it to the service.
-        return shoppingCartService.updateProduct(userId, productId, item.getQuantity());
+        return shoppingCartService.updateItemQuantity(userId, productId, item.getQuantity());
     }
 
-// ----------------------------------- [ @DeleteMapping getCart() ] ------------------------------------------------------
+// ----------------------------------- [ @DeleteMapping clearCart() ] ------------------------------------------------------
     // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated; return the cart (200 OK)
     // add a DELETE method to clear all products from the current users cart
     // https://localhost:8080/cart  - return the (now empty) cart so the front end can refresh it (200 OK)
 
     @DeleteMapping
-    public void clearCart(Principal principal)
+    public ShoppingCart clearCart(Principal principal)
     {
         String username = principal.getName();
         User user = userService.getByUserName(username);
         int userId = user.getId();
 
         shoppingCartService.clearCart(userId);
+        return shoppingCartService.getByUserId(userId);
     }
 
 }

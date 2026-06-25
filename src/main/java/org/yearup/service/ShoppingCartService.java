@@ -1,5 +1,6 @@
 package org.yearup.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.yearup.models.CartItem;
 import org.yearup.models.Product;
@@ -65,9 +66,9 @@ public class ShoppingCartService
 
     public ShoppingCart addProductToCart(int userId, int productId)
     {
-        CartItem existing = shoppingCartRepository.findByUserIdAndProductId(userId, productId);
+        CartItem exists = shoppingCartRepository.findByUserIdAndProductId(userId, productId);
 
-        if  (existing == null)
+        if  (exists == null)
         {
             CartItem newItem = new CartItem();
             newItem.setUserId(userId);
@@ -77,8 +78,8 @@ public class ShoppingCartService
         }
         else
         {
-            existing.setQuantity(existing.getQuantity() + 1);
-            shoppingCartRepository.save(existing);
+            exists.setQuantity(exists.getQuantity() + 1);
+            shoppingCartRepository.save(exists);
         }
         return getByUserId(userId); // returns same method signature + re-queries the DB
     }
@@ -88,6 +89,7 @@ public class ShoppingCartService
     // instructions: Delete method should completely clear the shopping cart table's data.
 
     // notes: call the repo to access DB. repo has a deleteByUserId() built in, nice.
+
     public void clearCart(int userId)
     {
         shoppingCartRepository.deleteByUserId(userId);
@@ -97,10 +99,17 @@ public class ShoppingCartService
 
     // instructions: this method should update the quantity of a specific product that is already in the cart
 
-    // notes: OPTIONAL, do later if there is time
+    // notes: we need to retrieve the data of the CartItem row that matches the user/productId
+    // then use .setQuantity and pass in 'quantity'
+    // then .save the repo
 
-    public ShoppingCart updateProduct(int userId, int productId, int quantity)
+    public ShoppingCart updateItemQuantity(int userId, int productId, int quantity)
     {
-        return null;
+        CartItem cartItem = shoppingCartRepository.findByUserIdAndProductId(userId, productId);
+
+        cartItem.setQuantity(quantity);
+        shoppingCartRepository.save(cartItem);
+
+        return getByUserId(userId);
     }
 }
