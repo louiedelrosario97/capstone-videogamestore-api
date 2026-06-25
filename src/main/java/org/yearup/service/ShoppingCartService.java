@@ -21,20 +21,20 @@ public class ShoppingCartService
         this.shoppingCartRepository = shoppingCartRepository;
         this.productService = productService;
     }
-
+//---------------------------------------- [ GET getByUserId() ] --------------------------------------------------
     public ShoppingCart getByUserId(int userId)
     {
         // instructions: load the user's cart rows, look up each product, and build the ShoppingCart
 
         // we want data from our DB, so we create a list that calls the repository. (repo connects to DB)
-        List<CartItem> cartByUserId = shoppingCartRepository.findByUserId(userId);
+        List<CartItem> usersCart = shoppingCartRepository.findByUserId(userId);
 
         // CartItem's variables are just IDs, so we need to use the 'productId' to fetch the full data
         // we'll use ProductService's getById() and pass in CartItem's getProductId()
 
         ShoppingCart cart = new ShoppingCart();
 
-        for (CartItem cartItem : cartByUserId)
+        for (CartItem cartItem : usersCart)
         {
             Product product = productService.getById(cartItem.getProductId());
 
@@ -50,8 +50,19 @@ public class ShoppingCartService
         return cart;
     }
 
-    // add additional methods here (what methods?)
-    // POST
-    // PUT
+// ----------------------------------- [ PUT - addProductToCart() ] ---------------------------------------------
+    public ShoppingCart addProductToCart(int userId, int productId)
+    {
+
+    }
+
+    public void deleteCart(int userId) {
+    }
+
+    public ShoppingCart updateProduct(int userId, int productId, int quantity) {
+    }
+
+
+    // POST - "posting" a new product into a cart
     // DELETE
 }
