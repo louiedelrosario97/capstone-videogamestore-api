@@ -18,4 +18,10 @@ public class ProfileService
     {
         return profileRepository.save(profile);
     }
+
+    // notes: looks like we need to make a get method. getById() pass in userId?
+    public Profile getById(int userId)
+    {
+
+    }
 }
