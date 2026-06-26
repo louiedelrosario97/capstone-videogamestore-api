@@ -19,9 +19,18 @@ public class ProfileService
         return profileRepository.save(profile);
     }
 
-    // notes: looks like we need to make a get method. getById() pass in userId?
-    public Profile getById(int userId)
-    {
+    // notes: - looks like we need to make a get method. getById() pass in userId?
+    //          we are just fetching the userId in the repo class
+    //        - need to create update() that the controller connects to
 
+    public Profile getByUserId(int userId)
+    {
+        return profileRepository.findByUserId(userId);
+    }
+
+    public Profile update(int userId, Profile profile)
+    {
+        profile.setUserId(userId);
+        return profileRepository.save(profile);
     }
 }
